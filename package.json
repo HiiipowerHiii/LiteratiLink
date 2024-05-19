@@ -1,0 +1,21 @@
+{
+  "name": "literatilink",
+  "version": "1.0.0",
+  "description": "Collaborative reading and book club management application.",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "axios": "^0.21.1",
+    "react-router-dom": "^5.2.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^11.2.6",
+    "@testing-library/jest-dom": "^5.11.10",
+    "jest": "^26.6.3"
+  }
+}
