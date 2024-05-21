@@ -4,16 +4,14 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import os
 
-# Initialize app, DB, and bcrypt
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
-# User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -25,27 +23,23 @@ class User(db.Model):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
 
-# Book model
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(100), nullable=False)
 
-# Discussion model
 class Discussion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
     book = db.relationship('Book', backref=db.backref('discussions', lazy=True))
     message = db.Column(db.Text, nullable=False)
 
-# Meeting model
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
     book = db.relationship('Book', backref=db.backref('meetings', lazy=True))
     date_time = db.Column(db.DateTime, nullable=False)
 
-# User Register Route
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -55,7 +49,6 @@ def register():
     db.session.commit()
     return jsonify({'message': 'User registered successfully.'}), 201
 
-# User Login Route
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -63,10 +56,8 @@ def login():
     if user and user.check_password(data['password']):
         access_token = create_access_token(identity=user.id)
         return jsonify({'access_token': access_token}), 200
-    else:
-        return jsonify({'message': 'Invalid credentials'}), 401
+    return jsonify({'message': 'Invalid credentials'}), 401
 
-# Create Book Route
 @app.route('/books', methods=['POST'])
 @jwt_required()
 def add_book():
@@ -76,17 +67,12 @@ def add_book():
     db.session.commit()
     return jsonify({'message': 'Book added successfully.'}), 201
 
-# List Books Route
 @app.route('/books', methods=['GET'])
 def get_books():
     books = Book.query.all()
-    output = []
-    for book in books:
-        book_data = {'title': book.title, 'author': book.author}
-        output.append(book_data)
+    output = [ {'title': book.title, 'author': book.author} for book in books ]
     return jsonify({'books': output}), 200
 
-# Create Discussion Route
 @app.route('/discussions', methods=['POST'])
 @jwt_required()
 def add_discussion():
@@ -96,17 +82,12 @@ def add_discussion():
     db.session.commit()
     return jsonify({'message': 'Discussion added successfully.'}), 201
 
-# List Discussions Route
 @app.route('/discussions/<int:book_id>', methods=['GET'])
 def get_discussions(book_id):
     discussions = Discussion.query.filter_by(book_id=book_id).all()
-    output = []
-    for discussion in discussions:
-        discussion_data = {'message': discussion.message}
-        output.append(discussion_data)
+    output = [ {'message': discussion.message} for discussion in discussions ]
     return jsonify({'discussions': output}), 200
 
-# Schedule Meeting Route
 @app.route('/meetings', methods=['POST'])
 @jwt_required()
 def schedule_meeting():
@@ -116,7 +97,6 @@ def schedule_meeting():
     db.session.commit()
     return jsonify({'message': 'Meeting scheduled successfully.'}), 201
 
-# Run Server
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)
