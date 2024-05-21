@@ -1,6 +1,6 @@
 import os
 import requests
-
+from functools import lru_cache
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -43,6 +43,7 @@ class BookManager:
     def list_books(self, user_id):
         return [book for book in self.books if book.user_id == user_id]
 
+    @lru_cache(maxsize=128)  # Using LRU cache as a simple caching strategy
     def fetch_book_metadata_from_google(self, isbn):
         params = {"q": f"isbn:{isbn}", "key": GOOGLE_API_KEY}
         response = requests.get(GOOGLE_BOOKS_API_URL, params=params)
@@ -51,6 +52,7 @@ class BookManager:
         else:
             return {}
 
+    @lru_cache(maxsize=128)  # Using LRU cache as a simple caching strategy
     def fetch_book_metadata_from_openlibrary(self, isbn):
         url = f"{OPEN_LIBRARY_API_URL}?bibkeys=ISBN:{isbn}&format=json&jscmd=data"
         response = requests.get(url)
