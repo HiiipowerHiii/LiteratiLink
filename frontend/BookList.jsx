@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const MOCK_BOOKS = [
   { id: 1, title: 'Book One', author: 'Author One', genre: 'Fantasy' },
@@ -21,7 +21,9 @@ const BookList = () => {
   };
 
   const filteredBooks = books.filter(book =>
-    book.title.includes(filter) || book.author.includes(filter) || book.genre.includes(filter)
+    book.title.toLowerCase().includes(filter.toLowerCase()) 
+    || book.author.toLowerCase().includes(filter.toLowerCase()) 
+    || book.genre.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
@@ -33,6 +35,8 @@ const BookList = () => {
         value={filter}
         onChange={handleFilterChange}
       />
+      
+      <h2>Available Books</h2>
       <ul>
         {filteredBooks.map(book => (
           <li key={book.id}>
@@ -43,6 +47,7 @@ const BookList = () => {
           </li>
         ))}
       </ul>
+
       <h2>Your Reading List</h2>
       <ul>
         {readingList.map(book => (
