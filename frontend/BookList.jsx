@@ -11,13 +11,21 @@ const BookList = () => {
   const [readingList, setReadingList] = useState([]);
   const [filter, setFilter] = useState('');
 
+  const logToConsole = (message) => {
+    console.log(message);
+  };
+
   const addBookToReadingList = (bookId) => {
     const bookToAdd = books.find(book => book.id === bookId);
-    setReadingList([...readingList, bookToAdd]);
+    if(bookToAdd) {
+      setReadingList([...readingList, bookToAdd]);
+      logToConsole(`Added "${bookToAdd.title}" to your reading list.`);
+    }
   };
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
+    logToConsole(`Filter set to: ${event.target.value}`);
   };
 
   const filteredBooks = books.filter(book =>
