@@ -11,28 +11,31 @@ const BookList = () => {
   const [readingList, setReadingList] = useState([]);
   const [filter, setFilter] = useState('');
 
-  const logToConsole = (message) => {
-    console.log(message);
-  };
+  const logToConsole = message => console.log(message);
 
-  const addBookToReadingList = (bookId) => {
+  const addBookToReadingList = bookId => {
     const bookToAdd = books.find(book => book.id === bookId);
-    if(bookToAdd) {
-      setReadingList([...readingList, bookToAdd]);
+    if (bookToAdd) {
+      setReadingList(prevList => [...prevList, bookToAdd]);
       logToConsole(`Added "${bookToAdd.title}" to your reading list.`);
     }
   };
 
-  const handleFilterChange = (event) => {
-    setFilter(event.target.value);
-    logToConsole(`Filter set to: ${event.target.value}`);
+  const handleFilterChange = event => {
+    const newFilter = event.target.value;
+    setFilter(newFilter);
+    logToConsole(`Filter set to: ${newFilter}`);
   };
 
-  const filteredBooks = books.filter(book =>
-    book.title.toLowerCase().includes(filter.toLowerCase()) 
-    || book.author.toLowerCase().includes(filter.toLowerCase()) 
-    || book.genre.toLowerCase().includes(filter.toLowerCase())
-  );
+  const filterBooks = (books, filter) => {
+    return books.filter(book =>
+      book.title.toLowerCase().includes(filter.toLowerCase()) ||
+      book.author.toLowerCase().includes(filter.toLowerCase()) ||
+      book.genre.toLowerCase().includes(filter.toLowerCase())
+    );
+  };
+
+  const filteredBooks = filterBooks(books, filter);
 
   return (
     <div>
@@ -43,29 +46,33 @@ const BookList = () => {
         value={filter}
         onChange={handleFilterChange}
       />
-      
-      <h2>Available Books</h2>
-      <ul>
-        {filteredBooks.map(book => (
-          <li key={book.id}>
-            <h2>{book.title}</h2>
-            <p>Author: {book.author}</p>
-            <p>Genre: {book.genre}</p>
-            <button onClick={() => addBookToReadingList(book.id)}>Add to Reading List</button>
-          </li>
-        ))}
-      </ul>
 
-      <h2>Your Reading List</h2>
-      <ul>
-        {readingList.map(book => (
-          <li key={book.id}>
-            <h3>{book.title}</h3>
-            <p>Author: {book.author}</p>
-            <p>Genre: {book.genre}</p>
-          </li>
-        ))}
-      </ul>
+      <section>
+        <h2>Available Books</h2>
+        <ul>
+          {filteredBooks.map(book => (
+            <li key={book.id}>
+              <h2>{book.title}</h2>
+              <p>Author: {book.author}</p>
+              <p>Genre: {book.genre}</p>
+              <button onClick={() => addBookToReadingList(book.id)}>Add to Reading List</button>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h2>Your Reading List</h2>
+        <ul>
+          {readingList.map(book => (
+            <li key={book.id}>
+              <h3>{book.title}</h3>
+              <p>Author: {book.author}</p>
+              <p>Genre: {book.genre}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 };
