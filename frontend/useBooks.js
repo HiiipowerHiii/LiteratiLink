@@ -20,12 +20,12 @@ const useBookManager = () => {
       setBooks(response.data);
       setError(null);  
     } catch (err) {
-      handleError(err);
+ device.     handleError(err);
     } finally {
       setLoading(false);
     }
-  }, [handleError]);  
-
+  }, [handleError]);
+  
   const addBook = async (bookData) => {
     setLoading(true);
     try {
