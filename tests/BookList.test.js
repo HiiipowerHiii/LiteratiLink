@@ -1,54 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { fetchBooks, addBook, remove officeBook } from './api/books';
+import { fetchBooks, addBook, removeBook } from './api/books'; 
 
 const BookList = ({ books: initialBooks }) => {
-    const [books, setBooks] = useState(initialBooks);
-    const [error, setError] = useState(null);
+    const [bookList, setBookList] = useState(initialBooks); 
+    const [fetchError, setFetchError] = useState(null);
 
     useEffect(() => {
-        const loadBooks = async () => {
+        const loadBookList = async () => { 
             try {
-                const response = await fetchBooks();
-                setBooks(response);
+                const fetchedBooks = await fetchBooks(); 
+                setBookList(fetchedBooks);
             } catch (err) {
-                setError('Failed to fetch books. Please try again later.');
+                setFetchError('Failed to fetch books. Please try again later.');
                 console.error("Error fetching books:", err);
             }
         };
         
-        loadBooks();
+        loadBookList();
     }, []);
 
-    const handleAddBook = async (book) => {
+    const handleAddNewBook = async (newBook) => { 
         try {
-            const updatedBooks = await addBook(book);
-            setBooks(updatedBooks);
+            const updatedBookList = await addBook(newBook); 
+            setBookList(updatedBookList);
         } catch (err) {
-            setError('Failed to add the book. Please try again later.');
+            setFetchError('Failed to add the book. Please try again later.'); 
             console.error("Error adding book:", err);
         }
     };
 
-    const handleRemoveBook = async (bookId) => {
+    const handleBookRemoval = async (bookId) => { 
         try {
-            const updatedBooks = await removeBook(bookId);
-            setBooks(updatedBooks);
+            const reducedBookList = await removeBook(bookId); 
+            setBookList(reducedBookList);
         } catch (err) {
-            setError('Failed to remove the book. Please try again later.');
-            console.error("Error removing book:", err);
+            setFetchError('Failed to remove the book. Please try again later.'); 
+            console.error("err removing book:", err);
         }
     };
 
-    if (error) {
-        return <div>Error: {error}</div>;
+    if (fetchError) {
+        return <div>Error: {fetchError}</div>; 
     }
 
     return (
         <div>
             <ul>
-                {books.map((book) => (
-                    <li key={book.id}>
-                        {book.title} - <button onClick={() => handleRemoveBook(book.id)}>Remove</button>
+                {bookList.map((bookItem) => ( 
+                    <li key={bookItem.id}>
+                        {bookItem.title} - <button onClick={() => handleBookRemoval(bookItem.id)}>Remove</button>
                     </li>
                 ))}
             </ul>
@@ -56,4 +56,4 @@ const BookList = ({ books: initialBooks }) => {
     );
 };
 
-export default BookDiebh;
+export default BookList;
